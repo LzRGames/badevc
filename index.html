@@ -3,221 +3,168 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Badevck</title>
+  <meta name="theme-color" content="#151519" />
+  <title>Badevc — Divisão de valores</title>
   <style>
     :root {
       color-scheme: dark;
       --bg: #151519;
       --panel: #202027;
-      --panel-2: #272730;
+      --panel-2: #292832;
       --text: #f4f2f8;
       --muted: #aaa7b5;
       --yellow: #f5d328;
       --purple: #9564f5;
-      --border: #383641;
-      --danger: #ff6577;
+      --border: #3a3844;
+      --green: #67d69a;
+      --red: #ff7184;
       --radius: 18px;
     }
 
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       min-height: 100vh;
       padding: 28px 18px;
       background:
-        radial-gradient(circle at 10% 0%, rgba(149, 100, 245, .13), transparent 32%),
-        radial-gradient(circle at 95% 90%, rgba(245, 211, 40, .08), transparent 28%),
+        radial-gradient(circle at 10% 0%, rgba(149,100,245,.14), transparent 32%),
+        radial-gradient(circle at 95% 90%, rgba(245,211,40,.08), transparent 28%),
         var(--bg);
       color: var(--text);
       font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-
     button, input { font: inherit; }
     button { cursor: pointer; }
+    button:disabled { cursor: not-allowed; opacity: .55; transform: none !important; }
+    [hidden] { display: none !important; }
 
-    .app { width: min(820px, 100%); margin: 0 auto; }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 34px;
-    }
-
+    .app { width: min(900px, 100%); margin: 0 auto; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 34px; }
     .brand { display: flex; align-items: center; gap: 12px; }
     .brand-mark {
-      display: grid;
-      place-items: center;
-      width: 45px;
-      height: 45px;
-      border-radius: 14px;
-      background: var(--yellow);
-      color: #17151b;
-      font-weight: 950;
-      letter-spacing: -2px;
-      box-shadow: 0 6px 25px rgba(245, 211, 40, .18);
+      display: grid; place-items: center; width: 46px; height: 46px;
+      border-radius: 14px; background: var(--yellow); color: #17151b;
+      font-weight: 950; font-size: 1.35rem; letter-spacing: -2px;
+      box-shadow: 0 6px 25px rgba(245,211,40,.18);
     }
     .brand-name { margin: 0; font-size: 1.22rem; font-weight: 850; letter-spacing: .3px; }
     .brand-subtitle { margin: 3px 0 0; color: var(--muted); font-size: .78rem; }
-
     .status {
-      color: var(--muted);
-      font-size: .78rem;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 8px 12px;
-      white-space: nowrap;
+      color: var(--muted); font-size: .78rem; border: 1px solid var(--border);
+      border-radius: 999px; padding: 8px 12px; white-space: nowrap;
     }
     .status::before {
-      content: "";
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      margin-right: 7px;
-      border-radius: 50%;
-      background: #78d99a;
-      vertical-align: 1px;
+      content: ""; display: inline-block; width: 7px; height: 7px;
+      margin-right: 7px; border-radius: 50%; background: var(--yellow); vertical-align: 1px;
     }
+    .status.online::before { background: var(--green); }
+    .status.error::before { background: var(--red); }
 
     .page { display: none; animation: appear .2s ease-out; }
     .page.active { display: block; }
     @keyframes appear { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-
-    .eyebrow {
-      margin: 0 0 10px;
-      color: var(--yellow);
-      font-size: .75rem;
-      font-weight: 800;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
+    .eyebrow { margin: 0 0 10px; color: var(--yellow); font-size: .75rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
     h1 { margin: 0; font-size: clamp(2rem, 6vw, 3.25rem); line-height: 1.05; letter-spacing: -1.7px; }
-    .intro { max-width: 560px; margin: 14px 0 28px; color: var(--muted); line-height: 1.65; }
-
+    .intro { max-width: 590px; margin: 14px 0 28px; color: var(--muted); line-height: 1.65; }
     .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .menu-card {
-      min-height: 174px;
-      padding: 22px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
+      min-height: 174px; padding: 22px; border: 1px solid var(--border); border-radius: var(--radius);
       background: linear-gradient(145deg, rgba(255,255,255,.035), transparent 65%), var(--panel);
-      color: var(--text);
-      text-align: left;
-      transition: transform .18s, border-color .18s, background .18s;
+      color: var(--text); text-align: left; transition: transform .18s, border-color .18s, background .18s;
     }
     .menu-card:hover { transform: translateY(-4px); border-color: var(--purple); background-color: #26232f; }
-    .menu-card .symbol {
-      display: grid;
-      place-items: center;
-      width: 42px;
-      height: 42px;
-      margin-bottom: 20px;
-      border-radius: 13px;
-      background: rgba(149, 100, 245, .16);
-      color: var(--purple);
-      font-size: 1.35rem;
-      font-weight: 800;
+    .symbol {
+      display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: 20px;
+      border-radius: 13px; background: rgba(149,100,245,.16); color: var(--purple); font-size: 1.35rem; font-weight: 800;
     }
-    .menu-card:nth-child(2) .symbol { background: rgba(245, 211, 40, .14); color: var(--yellow); }
+    .menu-card:nth-child(2) .symbol { background: rgba(245,211,40,.14); color: var(--yellow); }
+    .menu-card:nth-child(3) .symbol { background: rgba(149,100,245,.16); color: #bd9cff; }
     .menu-card h2 { margin: 0 0 7px; font-size: 1.08rem; }
     .menu-card p { margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.45; }
 
     .panel {
-      padding: clamp(20px, 4vw, 30px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      background: rgba(32, 32, 39, .94);
-      box-shadow: 0 18px 55px rgba(0,0,0,.18);
+      padding: clamp(20px, 4vw, 30px); border: 1px solid var(--border); border-radius: var(--radius);
+      background: rgba(32,32,39,.96); box-shadow: 0 18px 55px rgba(0,0,0,.18);
     }
     .page-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 23px; }
     .page-heading h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); }
-    .page-heading p { margin: 9px 0 0; color: var(--muted); line-height: 1.5; }
-
-    .back-button {
-      flex: 0 0 auto;
-      padding: 9px 13px;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      background: var(--panel-2);
-      color: var(--text);
+    .page-heading p:not(.eyebrow) { margin: 9px 0 0; color: var(--muted); line-height: 1.5; }
+    .back-button, .secondary-button {
+      padding: 10px 14px; border: 1px solid var(--border); border-radius: 11px;
+      background: var(--panel-2); color: var(--text);
     }
-    .back-button:hover { border-color: var(--purple); }
-
+    .back-button { flex: 0 0 auto; }
+    .back-button:hover, .secondary-button:hover { border-color: var(--purple); }
     label { display: block; margin: 0 0 9px; font-size: .9rem; font-weight: 700; }
     input {
-      width: 100%;
-      padding: 14px 15px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      outline: none;
-      background: #17171c;
-      color: var(--text);
-      transition: border-color .15s, box-shadow .15s;
+      width: 100%; padding: 14px 15px; border: 1px solid var(--border); border-radius: 12px;
+      outline: none; background: #17171c; color: var(--text); transition: border-color .15s, box-shadow .15s;
     }
-    input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(149, 100, 245, .14); }
+    input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(149,100,245,.14); }
     .field { margin-bottom: 18px; }
-
-    .primary-button, .secondary-button, .danger-button {
-      min-height: 46px;
-      padding: 12px 17px;
-      border: 0;
-      border-radius: 12px;
-      font-weight: 800;
-      transition: transform .15s, filter .15s;
+    .primary-button, .danger-button {
+      min-height: 46px; padding: 12px 17px; border: 0; border-radius: 12px;
+      font-weight: 800; transition: transform .15s, filter .15s;
     }
     .primary-button { background: var(--yellow); color: #19171c; }
-    .secondary-button { border: 1px solid var(--border); background: var(--panel-2); color: var(--text); }
-    .danger-button { border: 1px solid rgba(255,101,119,.35); background: rgba(255,101,119,.1); color: #ff8997; }
-    .primary-button:hover, .secondary-button:hover, .danger-button:hover { transform: translateY(-1px); filter: brightness(1.08); }
+    .danger-button { border: 1px solid rgba(255,113,132,.35); background: rgba(255,113,132,.1); color: #ff8997; }
+    .primary-button:hover, .danger-button:hover { transform: translateY(-1px); filter: brightness(1.08); }
     .full-button { width: 100%; }
     .message { min-height: 22px; margin: 12px 0 0; color: var(--yellow); font-size: .88rem; }
+    .small-note { margin: 15px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.55; }
 
-    .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 21px; }
-    .stat-card { padding: 17px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel-2); }
-    .stat-card span { display: block; color: var(--muted); font-size: .82rem; }
-    .stat-card strong { display: block; margin-top: 6px; font-size: clamp(1.25rem, 4vw, 1.7rem); overflow-wrap: anywhere; }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; margin-bottom: 18px; }
+    .stat-card { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--panel-2); }
+    .stat-card span { display: block; color: var(--muted); font-size: .78rem; }
+    .stat-card strong { display: block; margin-top: 7px; font-size: clamp(1.1rem, 3.2vw, 1.55rem); overflow-wrap: anywhere; }
     .stat-card.highlight strong { color: var(--yellow); }
-
-    .list-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 22px 0 12px; }
+    .stat-card.paid strong { color: var(--green); }
+    .stat-card.remaining strong { color: #bd9cff; }
+    .progress-card { padding: 15px 16px; border: 1px solid var(--border); border-radius: 14px; background: #1b1a21; }
+    .progress-label { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 10px; color: var(--muted); font-size: .82rem; }
+    .progress-track { width: 100%; height: 10px; border-radius: 99px; overflow: hidden; background: #35323e; }
+    .progress-fill { height: 100%; width: 0%; border-radius: inherit; background: linear-gradient(90deg, var(--purple), var(--yellow)); transition: width .25s ease; }
+    .list-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 23px 0 12px; }
     .list-heading h2 { margin: 0; font-size: 1rem; }
     .count { color: var(--muted); font-size: .82rem; }
-    .people-list { display: grid; gap: 9px; }
+    .people-list { display: grid; gap: 10px; }
     .person-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 15px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #1a1a20;
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 12px;
+      padding: 14px 15px; border: 1px solid var(--border); border-radius: 13px; background: #1a1a20;
     }
-    .person-name { display: flex; align-items: center; gap: 11px; min-width: 0; font-weight: 650; overflow-wrap: anywhere; }
+    .person-main { display: flex; align-items: center; gap: 11px; min-width: 0; }
     .person-number {
-      display: grid;
-      place-items: center;
-      flex: 0 0 30px;
-      height: 30px;
-      border-radius: 9px;
-      background: rgba(149,100,245,.16);
-      color: #bd9cff;
-      font-size: .8rem;
-      font-weight: 800;
+      display: grid; place-items: center; flex: 0 0 31px; height: 31px; border-radius: 9px;
+      background: rgba(149,100,245,.16); color: #bd9cff; font-size: .8rem; font-weight: 800;
     }
-    .person-value { color: var(--yellow); font-weight: 800; white-space: nowrap; }
+    .person-info { min-width: 0; }
+    .person-name { display: block; font-weight: 700; overflow-wrap: anywhere; }
+    .person-status { display: inline-block; margin-top: 5px; font-size: .7rem; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; }
+    .person-status.paid { color: var(--green); }
+    .person-status.pending { color: var(--yellow); }
+    .person-side { display: flex; align-items: center; gap: 12px; }
+    .person-value { color: var(--yellow); font-weight: 850; white-space: nowrap; }
+    .payment-button { padding: 9px 11px; border: 1px solid rgba(103,214,154,.3); border-radius: 10px; background: rgba(103,214,154,.1); color: var(--green); font-size: .78rem; font-weight: 800; white-space: nowrap; }
+    .payment-button.undo { border-color: var(--border); background: var(--panel-2); color: var(--muted); }
     .empty-state { padding: 26px 15px; border: 1px dashed var(--border); border-radius: 13px; color: var(--muted); text-align: center; line-height: 1.55; }
     .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
     .actions button { flex: 1 1 180px; }
-    .small-note { margin: 15px 0 0; color: var(--muted); font-size: .8rem; line-height: 1.55; }
-
+    .divider { height: 1px; margin: 25px 0; background: var(--border); }
+    .admin-box { padding: 16px; border: 1px solid rgba(149,100,245,.35); border-radius: 14px; background: rgba(149,100,245,.07); }
+    .admin-box h2 { margin: 0 0 8px; font-size: 1rem; }
+    .uid-value { display: block; margin: 10px 0; padding: 11px; border: 1px solid var(--border); border-radius: 9px; background: #17171c; color: #d8caff; font-family: ui-monospace, monospace; font-size: .78rem; overflow-wrap: anywhere; }
     footer { margin-top: 30px; color: #777481; text-align: center; font-size: .76rem; }
+    .connection-warning { margin: 0 0 20px; padding: 14px 16px; border: 1px solid rgba(255,211,40,.35); border-radius: 12px; background: rgba(245,211,40,.07); color: #f4e69a; font-size: .86rem; line-height: 1.5; }
 
+    @media (max-width: 720px) {
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .person-row { grid-template-columns: 1fr; }
+      .person-side { justify-content: space-between; padding-left: 42px; }
+    }
     @media (max-width: 640px) {
       body { padding: 20px 14px; }
-      header { margin-bottom: 27px; }
-      .status { font-size: .7rem; padding: 7px 9px; }
+      header { align-items: flex-start; margin-bottom: 27px; }
+      .status { max-width: 145px; white-space: normal; text-align: right; font-size: .7rem; padding: 7px 9px; }
       .menu-grid { grid-template-columns: 1fr; }
       .menu-card { min-height: auto; display: grid; grid-template-columns: 44px 1fr; column-gap: 14px; align-items: center; padding: 17px; }
       .menu-card .symbol { grid-row: span 2; margin: 0; }
@@ -238,28 +185,24 @@
           <p class="brand-subtitle">Painel de divisão de valores</p>
         </div>
       </div>
-      <div class="status">Dados salvos neste navegador</div>
+      <div id="connectionStatus" class="status" role="status" aria-live="polite">Conectando...</div>
     </header>
+
+    <div id="connectionWarning" class="connection-warning" hidden></div>
 
     <section id="home" class="page active">
       <p class="eyebrow">Bem-vindo ao sistema</p>
       <h1>Organize. Divida.<br><span style="color:var(--yellow)">Resolva.</span></h1>
-      <p class="intro">Adicione as pessoas, informe o valor total e veja quanto cada uma deverá pagar.</p>
+      <p class="intro">Adicione as pessoas, informe o valor total e acompanhe quem já pagou. As alterações são compartilhadas em tempo real com quem abrir este Badevc.</p>
       <div class="menu-grid">
-        <button class="menu-card" type="button" onclick="showPage('anotar')">
-          <span class="symbol">＋</span>
-          <h2>Anotar</h2>
-          <p>Adicionar uma pessoa à lista.</p>
+        <button class="menu-card" type="button" data-page="anotar">
+          <span class="symbol">＋</span><h2>Anotar</h2><p>Adicionar uma pessoa à lista.</p>
         </button>
-        <button class="menu-card" type="button" onclick="showPage('verificar')">
-          <span class="symbol">≡</span>
-          <h2>Verificar</h2>
-          <p>Conferir os nomes e os valores por pessoa.</p>
+        <button class="menu-card" type="button" data-page="verificar">
+          <span class="symbol">≡</span><h2>Verificar</h2><p>Conferir valores, pagamentos e saldo restante.</p>
         </button>
-        <button class="menu-card" type="button" onclick="showPage('configurar')">
-          <span class="symbol">⚙</span>
-          <h2>Configurar</h2>
-          <p>Alterar o valor total ou resetar a lista.</p>
+        <button class="menu-card" type="button" data-page="configurar">
+          <span class="symbol">⚙</span><h2>Configurar</h2><p>Alterar o valor total e administrar a lista.</p>
         </button>
       </div>
     </section>
@@ -267,19 +210,15 @@
     <section id="anotar" class="page">
       <div class="panel">
         <div class="page-heading">
-          <div>
-            <p class="eyebrow">Cadastro</p>
-            <h1>Anotar pessoa</h1>
-            <p>Digite o nome que deseja adicionar à lista.</p>
-          </div>
-          <button class="back-button" type="button" onclick="showPage('home')">← Início</button>
+          <div><p class="eyebrow">Cadastro</p><h1>Anotar pessoa</h1><p>Digite o nome que deseja adicionar à lista compartilhada.</p></div>
+          <button class="back-button" type="button" data-page="home">← Início</button>
         </div>
         <form id="personForm">
           <div class="field">
             <label for="personName">Nome da pessoa</label>
             <input id="personName" type="text" maxlength="70" placeholder="Ex.: João" autocomplete="off" required />
           </div>
-          <button class="primary-button full-button" type="submit">Salvar pessoa</button>
+          <button id="personSubmit" class="primary-button full-button" type="submit">Salvar pessoa</button>
           <p id="personMessage" class="message" aria-live="polite"></p>
         </form>
       </div>
@@ -288,392 +227,528 @@
     <section id="verificar" class="page">
       <div class="panel">
         <div class="page-heading">
-          <div>
-            <p class="eyebrow">Resumo</p>
-            <h1>Verificar lista</h1>
-            <p>Confira o total e a divisão entre as pessoas cadastradas.</p>
-          </div>
-          <button class="back-button" type="button" onclick="showPage('home')">← Início</button>
+          <div><p class="eyebrow">Resumo compartilhado</p><h1>Verificar lista</h1><p>Marque cada pessoa como paga quando o pagamento for confirmado.</p></div>
+          <button class="back-button" type="button" data-page="home">← Início</button>
         </div>
+
         <div class="stats">
-          <div class="stat-card highlight">
-            <span>Valor total</span>
-            <strong id="totalDisplay">R$ 0,00</strong>
-          </div>
-          <div class="stat-card">
-            <span>Valor por pessoa</span>
-            <strong id="shareDisplay">R$ 0,00</strong>
-          </div>
+          <div class="stat-card highlight"><span>Valor total</span><strong id="totalDisplay">R$ 0,00</strong></div>
+          <div class="stat-card paid"><span>Total pago</span><strong id="paidDisplay">R$ 0,00</strong></div>
+          <div class="stat-card remaining"><span>Valor restante</span><strong id="remainingDisplay">R$ 0,00</strong></div>
+          <div class="stat-card"><span>Média por pessoa</span><strong id="shareDisplay">—</strong></div>
         </div>
+
+        <div class="progress-card">
+          <div class="progress-label"><span>Progresso dos pagamentos</span><strong id="progressText">0% pago</strong></div>
+          <div class="progress-track"><div id="paymentProgress" class="progress-fill"></div></div>
+        </div>
+
         <div class="list-heading">
-          <h2>Pessoas cadastradas</h2>
-          <span id="peopleCount" class="count">0 pessoas</span>
+          <h2>Pessoas cadastradas</h2><span id="peopleCount" class="count">0 pessoas</span>
         </div>
         <div id="peopleList" class="people-list"></div>
         <div class="actions">
-          <button class="secondary-button" type="button" onclick="exportData()">Baixar backup (.json)</button>
-          <button class="secondary-button" type="button" onclick="renderPeople()">Atualizar lista</button>
+          <button class="secondary-button" type="button" id="exportButton">Baixar backup (.json)</button>
         </div>
-        <p class="small-note">O valor por pessoa é calculado dividindo o valor total pela quantidade de pessoas cadastradas.</p>
+        <p class="small-note">O valor é dividido em centavos para evitar diferenças de arredondamento. Quando há centavos que não podem ser divididos igualmente, a diferença de R$ 0,01 é distribuída entre algumas pessoas. O total pago e o saldo restante sempre fecham com o valor configurado.</p>
       </div>
     </section>
 
     <section id="configurar" class="page">
       <div class="panel">
         <div class="page-heading">
-          <div>
-            <p class="eyebrow">Preferências</p>
-            <h1>Configurar</h1>
-            <p>Defina o valor que será dividido entre as pessoas.</p>
-          </div>
-          <button class="back-button" type="button" onclick="showPage('home')">← Início</button>
+          <div><p class="eyebrow">Preferências</p><h1>Configurar</h1><p>As alterações administrativas são protegidas pelo Firebase.</p></div>
+          <button class="back-button" type="button" data-page="home">← Início</button>
         </div>
-        <form id="settingsForm">
-          <div class="field">
-            <label for="totalValue">Valor total (R$)</label>
-            <input id="totalValue" type="text" inputmode="decimal" placeholder="Ex.: 150,00" />
-          </div>
-          <button class="primary-button full-button" type="submit">Salvar valor total</button>
-          <p id="settingsMessage" class="message" aria-live="polite"></p>
-        </form>
-        <div style="height:1px;background:var(--border);margin:25px 0"></div>
-        <h2 style="font-size:1.05rem;margin:0 0 8px">Resetar lista de pessoas</h2>
-        <p class="small-note" style="margin:0 0 15px">Isso apagará todos os nomes cadastrados. O valor total configurado será mantido.</p>
-        <button class="danger-button full-button" type="button" onclick="resetPeople()">Resetar lista</button>
+
+        <div id="adminPanel" hidden>
+          <form id="settingsForm">
+            <div class="field">
+              <label for="totalValue">Valor total (R$)</label>
+              <input id="totalValue" type="text" inputmode="decimal" placeholder="Ex.: 150,00" required />
+            </div>
+            <button id="settingsSubmit" class="primary-button full-button" type="submit">Salvar valor total</button>
+            <p id="settingsMessage" class="message" aria-live="polite"></p>
+          </form>
+          <div class="divider"></div>
+          <h2 style="font-size:1.05rem;margin:0 0 8px">Resetar lista de pessoas</h2>
+          <p class="small-note" style="margin:0 0 15px">Isso apagará todos os nomes e os estados de pagamento. O valor total configurado será mantido.</p>
+          <button class="danger-button full-button" type="button" id="resetButton">Resetar lista</button>
+        </div>
+
+        <div id="visitorAdminInfo" class="admin-box" hidden>
+          <h2>Configuração reservada ao administrador</h2>
+          <p class="small-note">Para definir quem é o administrador, copie o UID deste navegador e siga as instruções abaixo do arquivo HTML. Não compartilhe esse UID publicamente.</p>
+          <span id="currentUid" class="uid-value">Aguardando autenticação...</span>
+          <button id="copyUidButton" class="secondary-button" type="button">Copiar meu UID</button>
+          <p id="uidMessage" class="message" aria-live="polite"></p>
+        </div>
       </div>
     </section>
 
-    <footer>Badevck · Todos os dados são atualizados em tempo real.</footer>
+    <footer>Badevc · Lista e pagamentos sincronizados em tempo real.</footer>
   </main>
 
-  <script>
-   
-<script type="module">
-  // 1. IMPORTAR O FIREBASE
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signInAnonymously
+    } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      push,
+      set
+    } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
 
-  import {
-    getAuth,
-    onAuthStateChanged,
-    signInAnonymously
-  } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+    // Configuração do aplicativo fornecida para o projeto Badevck.
+    // IMPORTANTE: copie a databaseURL em Firebase Console > Realtime Database.
+    const firebaseConfig = {
+      apiKey: "AIzaSyAeZSrLG-SvgKaW-S7C_FITZQjY9kkgwto",
+      authDomain: "badevck.firebaseapp.com",
+      databaseURL: "COLE_AQUI_A_URL_DO_REALTIME_DATABASE",
+      projectId: "badevck",
+      storageBucket: "badevck.firebasestorage.app",
+      messagingSenderId: "333766068123",
+      appId: "1:333766068123:web:c871f679aca72a5484433e"
+    };
 
-  import {
-    getDatabase,
-    ref,
-    onValue,
-    set,
-    push,
-    remove
-  } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+    // Depois de copiar o UID do administrador na página Configurar,
+    // substitua o texto abaixo pelo UID exato. Use o mesmo UID nas regras do Firebase.
+    const ADMIN_UID = "COLE_SEU_UID_AQUI";
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyAeZSrLG-SvgKaW-S7C_FIZTQjY9kkgwto",
-  authDomain: "badevck.firebaseapp.com",
-  projectId: "badevck",
-  storageBucket: "badevck.firebasestorage.app",
-  messagingSenderId: "333766068123",
-  appId: "1:333766068123:web:c871f679aca72a5484433e"
-};
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const databaseConfigured = typeof firebaseConfig.databaseURL === "string" &&
+      firebaseConfig.databaseURL.startsWith("https://") &&
+      !firebaseConfig.databaseURL.includes("COLE_AQUI");
 
-  // 3. INICIALIZAR FIREBASE
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const database = getDatabase(app);
+    let database = null;
+    let badevcRef = null;
+    let peopleRef = null;
+    let totalCentsRef = null;
+    let currentUser = null;
+    let stopListening = null;
+    let authStarted = false;
+    let legacyMigrationRunning = false;
 
-  const badevcRef = ref(database, "badevc");
-  const peopleRef = ref(database, "badevc/people");
-  const totalRef = ref(database, "badevc/total");
+    const appData = { totalCents: 0, people: [] };
 
-  let appData = {
-    total: 0,
-    people: []
-  };
+    const $ = (id) => document.getElementById(id);
 
-  let stopListening = null;
+    function setStatus(message, state = "") {
+      const status = $("connectionStatus");
+      status.textContent = message;
+      status.classList.remove("online", "error");
+      if (state) status.classList.add(state);
+    }
 
+    function showConnectionWarning(message) {
+      const warning = $("connectionWarning");
+      warning.textContent = message;
+      warning.hidden = false;
+    }
 
-  // 4. CONECTAR E SINCRONIZAR
-  onAuthStateChanged(auth, async (user) => {
-    if (!user) {
+    function money(cents) {
+      return (Number(cents || 0) / 100).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      });
+    }
+
+    function formatCentsForInput(cents) {
+      return (Number(cents || 0) / 100).toFixed(2).replace(".", ",");
+    }
+
+    function parseMoneyToCents(rawValue) {
+      let value = String(rawValue).trim().replace(/\s/g, "").replace(/^R\$/i, "");
+      if (!value) return null;
+
+      // Formato brasileiro: 1.234,56. Também aceita 1234.56.
+      if (value.includes(",")) {
+        value = value.replace(/\./g, "").replace(",", ".");
+      }
+
+      if (!/^\d+(\.\d{1,2})?$/.test(value)) return null;
+      const amount = Number(value);
+      if (!Number.isFinite(amount) || amount < 0) return null;
+
+      const cents = Math.round((amount + Number.EPSILON) * 100);
+      if (!Number.isSafeInteger(cents) || cents > 100000000000) return null;
+      return cents;
+    }
+
+    function isAdmin() {
+      return Boolean(currentUser && ADMIN_UID !== "COLE_SEU_UID_AQUI" &&
+        ADMIN_UID.trim() && currentUser.uid === ADMIN_UID.trim());
+    }
+
+    function updateAdminUI() {
+      const admin = isAdmin();
+      $("adminPanel").hidden = !admin;
+      $("visitorAdminInfo").hidden = admin || !currentUser;
+      if (currentUser) $("currentUid").textContent = currentUser.uid;
+      if (admin && document.activeElement !== $("totalValue")) {
+        $("totalValue").value = formatCentsForInput(appData.totalCents);
+      }
+    }
+
+    function showPage(pageId) {
+      document.querySelectorAll(".page").forEach(page => page.classList.remove("active"));
+      const target = $(pageId);
+      if (target) target.classList.add("active");
+
+      if (pageId === "verificar") renderPeople();
+      if (pageId === "configurar") {
+        updateAdminUI();
+        $("settingsMessage").textContent = "";
+        $("uidMessage").textContent = "";
+      }
+      if (pageId === "anotar") {
+        $("personName").value = "";
+        $("personMessage").textContent = "";
+        setTimeout(() => $("personName").focus(), 0);
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.querySelectorAll("[data-page]").forEach(button => {
+      button.addEventListener("click", () => showPage(button.dataset.page));
+    });
+
+    function divideCents(totalCents, numberOfPeople) {
+      if (numberOfPeople <= 0) return [];
+      const base = Math.floor(totalCents / numberOfPeople);
+      const remainder = totalCents % numberOfPeople;
+      return Array.from({ length: numberOfPeople }, (_, index) => base + (index < remainder ? 1 : 0));
+    }
+
+    function renderPeople() {
+      const list = $("peopleList");
+      const people = appData.people;
+      const count = people.length;
+      const amounts = divideCents(appData.totalCents, count);
+      const paidCents = people.reduce((sum, person, index) => {
+        return sum + (person.paid ? amounts[index] : 0);
+      }, 0);
+      const remainingCents = Math.max(0, appData.totalCents - paidCents);
+      const percentPaid = appData.totalCents > 0
+        ? Math.min(100, Math.round((paidCents / appData.totalCents) * 100))
+        : (remainingCents === 0 && count > 0 && people.every(person => person.paid) ? 100 : 0);
+
+      $("totalDisplay").textContent = money(appData.totalCents);
+      $("paidDisplay").textContent = money(paidCents);
+      $("remainingDisplay").textContent = money(remainingCents);
+      $("shareDisplay").textContent = count > 0
+        ? money(Math.round(appData.totalCents / count))
+        : "—";
+      $("peopleCount").textContent = `${count} ${count === 1 ? "pessoa" : "pessoas"} · ${people.filter(p => p.paid).length} pagaram`;
+      $("progressText").textContent = `${percentPaid}% pago`;
+      $("paymentProgress").style.width = `${percentPaid}%`;
+      list.replaceChildren();
+
+      if (count === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Ainda não há ninguém na lista. Use a opção Anotar para adicionar a primeira pessoa.";
+        list.appendChild(empty);
+        return;
+      }
+
+      people.forEach((person, index) => {
+        const row = document.createElement("article");
+        row.className = "person-row";
+
+        const main = document.createElement("div");
+        main.className = "person-main";
+        const number = document.createElement("span");
+        number.className = "person-number";
+        number.textContent = String(index + 1).padStart(2, "0");
+
+        const info = document.createElement("div");
+        info.className = "person-info";
+        const name = document.createElement("span");
+        name.className = "person-name";
+        name.textContent = person.name;
+        const status = document.createElement("span");
+        status.className = `person-status ${person.paid ? "paid" : "pending"}`;
+        status.textContent = person.paid ? "Pagamento confirmado" : "Pagamento pendente";
+        info.append(name, status);
+        main.append(number, info);
+
+        const side = document.createElement("div");
+        side.className = "person-side";
+        const amount = document.createElement("span");
+        amount.className = "person-value";
+        amount.textContent = money(amounts[index]);
+        const paymentButton = document.createElement("button");
+        paymentButton.type = "button";
+        paymentButton.className = `payment-button ${person.paid ? "undo" : ""}`;
+        paymentButton.textContent = person.legacy
+          ? "Aguardando migração"
+          : (person.paid ? "Desfazer pagamento" : "Marcar como pago");
+        paymentButton.disabled = Boolean(person.legacy);
+        if (!person.legacy) paymentButton.addEventListener("click", () => togglePaid(person.id));
+        side.append(amount, paymentButton);
+
+        row.append(main, side);
+        list.appendChild(row);
+      });
+    }
+
+    async function togglePaid(personId) {
+      if (!database || !currentUser) {
+        alert("O Badevc ainda não está conectado ao banco de dados.");
+        return;
+      }
+      const person = appData.people.find(item => item.id === personId);
+      if (!person) return;
+
       try {
-        await signInAnonymously(auth);
+        const personRef = ref(database, `badevc/people/${personId}`);
+        await set(personRef, {
+          name: person.name,
+          paid: !person.paid,
+          createdAt: person.createdAt
+        });
       } catch (error) {
-        console.error("Erro na autenticação:", error);
-        document.querySelector(".status").textContent =
-          "Erro na autenticação";
+        console.error("Erro ao atualizar pagamento:", error);
+        alert("Não foi possível atualizar o pagamento. Verifique as regras do Firebase.");
       }
-      return;
     }
 
-    if (stopListening) return;
-
-    stopListening = onValue(
-      badevcRef,
-      (snapshot) => {
-        const data = snapshot.val() || {};
-
-        appData.total = Number(data.total) || 0;
-
-        const peopleData = data.people || {};
-
-        appData.people = Object.values(peopleData)
-          .filter(name => typeof name === "string");
-
-        renderPeople();
-
-        document.querySelector(".status").textContent =
-          "Sincronizado em tempo real";
-      },
-      (error) => {
-        console.error("Erro ao receber dados:", error);
-        document.querySelector(".status").textContent =
-          "Erro de sincronização";
-      }
-    );
-  });
-
-
-  // 5. NAVEGAÇÃO ENTRE AS PÁGINAS
-  function showPage(pageId) {
-    document.querySelectorAll(".page").forEach(page => {
-      page.classList.remove("active");
-    });
-
-    const target = document.getElementById(pageId);
-
-    if (target) target.classList.add("active");
-
-    if (pageId === "verificar") renderPeople();
-
-    if (pageId === "configurar") {
-      document.getElementById("totalValue").value =
-        appData.total.toFixed(2).replace(".", ",");
-
-      document.getElementById("settingsMessage").textContent = "";
-    }
-
-    if (pageId === "anotar") {
-      document.getElementById("personName").value = "";
-      document.getElementById("personMessage").textContent = "";
-      document.getElementById("personName").focus();
-    }
-
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-
-  // 6. FORMATAÇÃO DE DINHEIRO
-  function money(value) {
-    return Number(value).toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL"
-    });
-  }
-
-
-  // 7. ADICIONAR PESSOA
-  document.getElementById("personForm").addEventListener(
-    "submit",
-    async (event) => {
+    $("personForm").addEventListener("submit", async (event) => {
       event.preventDefault();
-
-      const input = document.getElementById("personName");
-      const message = document.getElementById("personMessage");
-
-      const name = input.value.trim();
-
+      const input = $("personName");
+      const message = $("personMessage");
+      const name = input.value.trim().replace(/\s+/g, " ");
       if (!name) {
         message.textContent = "Digite um nome antes de salvar.";
         return;
       }
+      if (!database || !currentUser || !peopleRef) {
+        message.textContent = "O banco de dados ainda não está conectado.";
+        return;
+      }
 
       const alreadyExists = appData.people.some(person =>
-        person.toLocaleLowerCase("pt-BR") ===
-        name.toLocaleLowerCase("pt-BR")
+        person.name.toLocaleLowerCase("pt-BR") === name.toLocaleLowerCase("pt-BR")
       );
-
       if (alreadyExists) {
         message.textContent = "Esse nome já está na lista.";
         return;
       }
 
+      const submit = $("personSubmit");
+      submit.disabled = true;
+      message.textContent = "Salvando...";
       try {
         const newPersonRef = push(peopleRef);
-
-        await set(newPersonRef, name);
-
-        message.textContent = name + " foi adicionado(a)!";
+        await set(newPersonRef, { name, paid: false, createdAt: Date.now() });
+        message.textContent = `${name} foi adicionado(a) à lista compartilhada!`;
         input.value = "";
         input.focus();
-
       } catch (error) {
-        console.error(error);
-        message.textContent = "Erro ao salvar. Tente novamente.";
+        console.error("Erro ao adicionar pessoa:", error);
+        message.textContent = "Não foi possível salvar. Verifique as regras do Firebase.";
+      } finally {
+        submit.disabled = false;
       }
-    }
-  );
+    });
 
-
-  // 8. CONFIGURAR VALOR TOTAL
-  document.getElementById("settingsForm").addEventListener(
-    "submit",
-    async (event) => {
+    $("settingsForm").addEventListener("submit", async (event) => {
       event.preventDefault();
-
-      const rawValue = document
-        .getElementById("totalValue").value.trim();
-
-      const normalized = rawValue
-        .replace(/\s/g, "")
-        .replace(",", ".");
-
-      const value = Number(normalized);
-
-      const message =
-        document.getElementById("settingsMessage");
-
-      if (!rawValue || !Number.isFinite(value) || value < 0) {
-        message.textContent = "Digite um valor válido.";
+      const message = $("settingsMessage");
+      if (!isAdmin()) {
+        message.textContent = "Somente o administrador pode alterar o valor total.";
+        return;
+      }
+      const cents = parseMoneyToCents($("totalValue").value);
+      if (cents === null) {
+        message.textContent = "Digite um valor válido, como 150,00 (máximo R$ 1 bilhão).";
         return;
       }
 
+      const submit = $("settingsSubmit");
+      submit.disabled = true;
+      message.textContent = "Salvando...";
       try {
-        await set(
-          totalRef,
-          Math.round((value + Number.EPSILON) * 100) / 100
-        );
-
-        message.textContent = "Valor atualizado com sucesso!";
-
+        await set(totalCentsRef, cents);
+        message.textContent = "Valor total atualizado para todos!";
       } catch (error) {
-        console.error(error);
-        message.textContent = "Erro ao atualizar o valor.";
+        console.error("Erro ao salvar o valor:", error);
+        message.textContent = "Não foi possível salvar. Confira seu UID nas regras do Firebase.";
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    $("resetButton").addEventListener("click", async () => {
+      if (!isAdmin()) {
+        alert("Somente o administrador pode resetar a lista.");
+        return;
+      }
+      if (appData.people.length === 0) {
+        alert("A lista já está vazia.");
+        return;
+      }
+      const confirmed = confirm("Tem certeza de que deseja apagar todos os nomes e pagamentos? O valor total será mantido.");
+      if (!confirmed) return;
+      try {
+        await set(peopleRef, null);
+        alert("Lista resetada para todos os visitantes.");
+      } catch (error) {
+        console.error("Erro ao resetar a lista:", error);
+        alert("Não foi possível resetar. Confira seu UID nas regras do Firebase.");
+      }
+    });
+
+    $("exportButton").addEventListener("click", () => {
+      const backup = {
+        app: "Badevc",
+        exportedAt: new Date().toISOString(),
+        totalCents: appData.totalCents,
+        people: appData.people.map(person => ({
+          name: person.name,
+          paid: person.paid,
+          amountCents: person.amountCents
+        }))
+      };
+      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "badevc-backup.json";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    });
+
+    $("copyUidButton").addEventListener("click", async () => {
+      if (!currentUser) return;
+      const uid = currentUser.uid;
+      try {
+        await navigator.clipboard.writeText(uid);
+        $("uidMessage").textContent = "UID copiado!";
+      } catch (error) {
+        $("uidMessage").textContent = "Não foi possível copiar automaticamente. Selecione e copie o UID acima.";
+      }
+    });
+
+    function migrateOldDataIfNeeded(data, peopleObject) {
+      if (!isAdmin() || legacyMigrationRunning) return;
+      const tasks = [];
+
+      if ((data.totalCents === undefined || data.totalCents === null) &&
+          data.total !== undefined && data.total !== null &&
+          Number.isFinite(Number(data.total)) && Number(data.total) >= 0) {
+        const oldTotalCents = Math.round(Number(data.total) * 100);
+        tasks.push(set(totalCentsRef, oldTotalCents));
+      }
+
+      for (const [id, oldPerson] of Object.entries(peopleObject)) {
+        if (typeof oldPerson === "string" && oldPerson.trim()) {
+          tasks.push(set(ref(database, `badevc/people/${id}`), {
+            name: oldPerson.trim(),
+            paid: false,
+            createdAt: Date.now()
+          }));
+        }
+      }
+
+      if (tasks.length > 0) {
+        legacyMigrationRunning = true;
+        Promise.all(tasks)
+          .catch(error => {
+            console.error("Não foi possível migrar os dados antigos:", error);
+            showConnectionWarning("Há dados da versão antiga que não puderam ser convertidos. Confira se este navegador está configurado como administrador e se as regras foram atualizadas.");
+          })
+          .finally(() => { legacyMigrationRunning = false; });
       }
     }
-  );
 
+    if (!databaseConfigured) {
+      setStatus("Falta configurar o banco", "error");
+      showConnectionWarning("Antes de usar o site, substitua databaseURL pela URL exibida em Firebase Console → Realtime Database. Sem essa URL, o Badevc não consegue conectar ao banco.");
+      $("personSubmit").disabled = true;
+      $("settingsSubmit").disabled = true;
+      $("resetButton").disabled = true;
+    } else {
+      database = getDatabase(app);
+      badevcRef = ref(database, "badevc");
+      peopleRef = ref(database, "badevc/people");
+      totalCentsRef = ref(database, "badevc/totalCents");
 
-  // 9. MOSTRAR LISTA DE PESSOAS
-  function renderPeople() {
-    const list = document.getElementById("peopleList");
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          if (authStarted) return;
+          authStarted = true;
+          setStatus("Entrando...");
+          try {
+            await signInAnonymously(auth);
+          } catch (error) {
+            console.error("Erro na autenticação anônima:", error);
+            setStatus("Falha na autenticação", "error");
+            showConnectionWarning("Não foi possível entrar anonimamente. Confira em Firebase Console → Authentication se o método Anônimo está ativado.");
+          }
+          return;
+        }
 
-    const count = appData.people.length;
+        currentUser = user;
+        updateAdminUI();
+        setStatus("Conectado; sincronizando...", "online");
 
-    const share = count > 0
-      ? appData.total / count
-      : 0;
+        if (stopListening) return;
+        stopListening = onValue(badevcRef, (snapshot) => {
+          const data = snapshot.val() || {};
+          const total = Number(data.totalCents);
+          if (Number.isSafeInteger(total) && total >= 0) {
+            appData.totalCents = total;
+          } else if (data.total !== undefined && data.total !== null && Number.isFinite(Number(data.total))) {
+            // Compatibilidade com a versão anterior, que salvava o total em reais.
+            appData.totalCents = Math.max(0, Math.round(Number(data.total) * 100));
+          } else {
+            appData.totalCents = 0;
+          }
 
-    document.getElementById("totalDisplay").textContent =
-      money(appData.total);
+          const peopleObject = data.people && typeof data.people === "object" ? data.people : {};
+          appData.people = Object.entries(peopleObject)
+            .map(([id, person]) => {
+              // Compatibilidade com a versão anterior, que salvava apenas o nome como texto.
+              if (typeof person === "string" && person.trim()) {
+                return { id, name: person.trim(), paid: false, createdAt: 0, legacy: true };
+              }
+              if (!person || typeof person.name !== "string" || !person.name.trim()) return null;
+              return {
+                id,
+                name: person.name.trim(),
+                paid: person.paid === true,
+                createdAt: Number(person.createdAt) || 0,
+                legacy: false
+              };
+            })
+            .filter(Boolean)
+            .sort((a, b) => a.createdAt - b.createdAt || a.id.localeCompare(b.id));
 
-    document.getElementById("shareDisplay").textContent =
-      count > 0 ? money(share) : "—";
-
-    document.getElementById("peopleCount").textContent =
-      count + (count === 1 ? " pessoa" : " pessoas");
-
-    list.replaceChildren();
-
-    if (count === 0) {
-      const empty = document.createElement("div");
-
-      empty.className = "empty-state";
-
-      empty.textContent =
-        "Ainda não há ninguém na lista. Use a opção Anotar para adicionar a primeira pessoa.";
-
-      list.appendChild(empty);
-      return;
+          const amounts = divideCents(appData.totalCents, appData.people.length);
+          appData.people.forEach((person, index) => { person.amountCents = amounts[index]; });
+          renderPeople();
+          updateAdminUI();
+          migrateOldDataIfNeeded(data, peopleObject);
+          setStatus("Sincronizado em tempo real", "online");
+        }, (error) => {
+          console.error("Erro ao receber dados do Firebase:", error);
+          setStatus("Erro ao sincronizar", "error");
+          showConnectionWarning("O Firebase recusou a leitura. Confira se as regras do Realtime Database permitem leitura para usuários autenticados.");
+        });
+      });
     }
 
-    appData.people.forEach((name, index) => {
-      const row = document.createElement("div");
-      row.className = "person-row";
-
-      const nameWrap = document.createElement("div");
-      nameWrap.className = "person-name";
-
-      const number = document.createElement("span");
-      number.className = "person-number";
-      number.textContent = String(index + 1).padStart(2, "0");
-
-      const label = document.createElement("span");
-      label.textContent = name;
-
-      nameWrap.append(number, label);
-
-      const value = document.createElement("span");
-      value.className = "person-value";
-      value.textContent = money(share);
-
-      row.append(nameWrap, value);
-      list.appendChild(row);
-    });
-  }
-
-
-  // 10. RESETAR LISTA
-  async function resetPeople() {
-    if (appData.people.length === 0) {
-      alert("A lista já está vazia.");
-      return;
-    }
-
-    const confirmed = confirm(
-      "Tem certeza de que deseja apagar todos os nomes?"
-    );
-
-    if (!confirmed) return;
-
-    try {
-      await remove(peopleRef);
-      alert("Lista resetada com sucesso!");
-
-    } catch (error) {
-      console.error(error);
-      alert("Não foi possível resetar a lista.");
-    }
-  }
-
-
-  // 11. BAIXAR BACKUP
-  function exportData() {
-    const backup = {
-      app: "Badevc",
-      exportedAt: new Date().toISOString(),
-      total: appData.total,
-      people: appData.people
-    };
-
-    const blob = new Blob(
-      [JSON.stringify(backup, null, 2)],
-      { type: "application/json" }
-    );
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "badevc-backup.json";
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-
-    URL.revokeObjectURL(url);
-  }
-
-
-  // 12. DISPONIBILIZAR FUNÇÕES PARA OS BOTÕES HTML
-  window.showPage = showPage;
-  window.renderPeople = renderPeople;
-  window.resetPeople = resetPeople;
-  window.exportData = exportData;
-
-  renderPeople();
-
-</script>
+    renderPeople();
+  </script>
 </body>
 </html>
