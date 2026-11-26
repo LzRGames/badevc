@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Badevc</title>
+  <title>Badevck</title>
   <style>
     :root {
       color-scheme: dark;
@@ -343,177 +343,342 @@
       </div>
     </section>
 
-    <footer>Badevc · Seus dados ficam armazenados neste navegador.</footer>
+    <footer>Badevck · Todos os dados são atualizados em tempo real.</footer>
   </main>
 
   <script>
-    const STORAGE_KEY = 'badevc_app_data_v1';
+   
+<script type="module">
+  // 1. IMPORTAR O FIREBASE
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
 
-    function loadData() {
+  import {
+    getAuth,
+    onAuthStateChanged,
+    signInAnonymously
+  } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+
+  import {
+    getDatabase,
+    ref,
+    onValue,
+    set,
+    push,
+    remove
+  } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-database.js";
+
+ // Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyAeZSrLG-SvgKaW-S7C_FIZTQjY9kkgwto",
+  authDomain: "badevck.firebaseapp.com",
+  projectId: "badevck",
+  storageBucket: "badevck.firebasestorage.app",
+  messagingSenderId: "333766068123",
+  appId: "1:333766068123:web:c871f679aca72a5484433e"
+};
+
+  // 3. INICIALIZAR FIREBASE
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const database = getDatabase(app);
+
+  const badevcRef = ref(database, "badevc");
+  const peopleRef = ref(database, "badevc/people");
+  const totalRef = ref(database, "badevc/total");
+
+  let appData = {
+    total: 0,
+    people: []
+  };
+
+  let stopListening = null;
+
+
+  // 4. CONECTAR E SINCRONIZAR
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
       try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) return { total: 0, people: [] };
-        const parsed = JSON.parse(saved);
-        return {
-          total: Number.isFinite(Number(parsed.total)) ? Math.max(0, Number(parsed.total)) : 0,
-          people: Array.isArray(parsed.people)
-            ? parsed.people.filter(name => typeof name === 'string').map(name => name.trim()).filter(Boolean)
-            : []
-        };
+        await signInAnonymously(auth);
       } catch (error) {
-        console.error('Não foi possível carregar os dados:', error);
-        return { total: 0, people: [] };
+        console.error("Erro na autenticação:", error);
+        document.querySelector(".status").textContent =
+          "Erro na autenticação";
       }
+      return;
     }
 
-    let appData = loadData();
+    if (stopListening) return;
 
-    function saveData() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
-        return true;
-      } catch (error) {
-        console.error('Não foi possível salvar os dados:', error);
-        alert('Não foi possível salvar os dados neste navegador. Verifique o espaço disponível ou as configurações do navegador.');
-        return false;
+    stopListening = onValue(
+      badevcRef,
+      (snapshot) => {
+        const data = snapshot.val() || {};
+
+        appData.total = Number(data.total) || 0;
+
+        const peopleData = data.people || {};
+
+        appData.people = Object.values(peopleData)
+          .filter(name => typeof name === "string");
+
+        renderPeople();
+
+        document.querySelector(".status").textContent =
+          "Sincronizado em tempo real";
+      },
+      (error) => {
+        console.error("Erro ao receber dados:", error);
+        document.querySelector(".status").textContent =
+          "Erro de sincronização";
       }
+    );
+  });
+
+
+  // 5. NAVEGAÇÃO ENTRE AS PÁGINAS
+  function showPage(pageId) {
+    document.querySelectorAll(".page").forEach(page => {
+      page.classList.remove("active");
+    });
+
+    const target = document.getElementById(pageId);
+
+    if (target) target.classList.add("active");
+
+    if (pageId === "verificar") renderPeople();
+
+    if (pageId === "configurar") {
+      document.getElementById("totalValue").value =
+        appData.total.toFixed(2).replace(".", ",");
+
+      document.getElementById("settingsMessage").textContent = "";
     }
 
-    function showPage(pageId) {
-      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-      const target = document.getElementById(pageId);
-      if (target) target.classList.add('active');
-      if (pageId === 'verificar') renderPeople();
-      if (pageId === 'configurar') {
-        document.getElementById('totalValue').value = appData.total.toFixed(2).replace('.', ',');
-        document.getElementById('settingsMessage').textContent = '';
-      }
-      if (pageId === 'anotar') {
-        document.getElementById('personName').value = '';
-        document.getElementById('personMessage').textContent = '';
-        document.getElementById('personName').focus();
-      }
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (pageId === "anotar") {
+      document.getElementById("personName").value = "";
+      document.getElementById("personMessage").textContent = "";
+      document.getElementById("personName").focus();
     }
 
-    function money(value) {
-      return Number(value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-    document.getElementById('personForm').addEventListener('submit', event => {
+
+  // 6. FORMATAÇÃO DE DINHEIRO
+  function money(value) {
+    return Number(value).toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+  }
+
+
+  // 7. ADICIONAR PESSOA
+  document.getElementById("personForm").addEventListener(
+    "submit",
+    async (event) => {
       event.preventDefault();
-      const input = document.getElementById('personName');
-      const message = document.getElementById('personMessage');
+
+      const input = document.getElementById("personName");
+      const message = document.getElementById("personMessage");
+
       const name = input.value.trim();
 
       if (!name) {
-        message.textContent = 'Digite um nome antes de salvar.';
+        message.textContent = "Digite um nome antes de salvar.";
         return;
       }
 
-      const alreadyExists = appData.people.some(person => person.toLocaleLowerCase('pt-BR') === name.toLocaleLowerCase('pt-BR'));
+      const alreadyExists = appData.people.some(person =>
+        person.toLocaleLowerCase("pt-BR") ===
+        name.toLocaleLowerCase("pt-BR")
+      );
+
       if (alreadyExists) {
-        message.textContent = 'Esse nome já está na lista.';
+        message.textContent = "Esse nome já está na lista.";
         return;
       }
 
-      appData.people.push(name);
-      if (saveData()) {
-        message.textContent = `${name} foi adicionado(a) à lista!`;
-        input.value = '';
-        input.focus();
-      }
-    });
+      try {
+        const newPersonRef = push(peopleRef);
 
-    document.getElementById('settingsForm').addEventListener('submit', event => {
+        await set(newPersonRef, name);
+
+        message.textContent = name + " foi adicionado(a)!";
+        input.value = "";
+        input.focus();
+
+      } catch (error) {
+        console.error(error);
+        message.textContent = "Erro ao salvar. Tente novamente.";
+      }
+    }
+  );
+
+
+  // 8. CONFIGURAR VALOR TOTAL
+  document.getElementById("settingsForm").addEventListener(
+    "submit",
+    async (event) => {
       event.preventDefault();
-      const rawValue = document.getElementById('totalValue').value.trim();
-      const normalized = rawValue.replace(/\s/g, '').replace(',', '.');
+
+      const rawValue = document
+        .getElementById("totalValue").value.trim();
+
+      const normalized = rawValue
+        .replace(/\s/g, "")
+        .replace(",", ".");
+
       const value = Number(normalized);
-      const message = document.getElementById('settingsMessage');
+
+      const message =
+        document.getElementById("settingsMessage");
 
       if (!rawValue || !Number.isFinite(value) || value < 0) {
-        message.textContent = 'Digite um valor válido (ex.: 150,00).';
+        message.textContent = "Digite um valor válido.";
         return;
       }
 
-      appData.total = Math.round((value + Number.EPSILON) * 100) / 100;
-      if (saveData()) message.textContent = 'Valor total atualizado com sucesso!';
+      try {
+        await set(
+          totalRef,
+          Math.round((value + Number.EPSILON) * 100) / 100
+        );
+
+        message.textContent = "Valor atualizado com sucesso!";
+
+      } catch (error) {
+        console.error(error);
+        message.textContent = "Erro ao atualizar o valor.";
+      }
+    }
+  );
+
+
+  // 9. MOSTRAR LISTA DE PESSOAS
+  function renderPeople() {
+    const list = document.getElementById("peopleList");
+
+    const count = appData.people.length;
+
+    const share = count > 0
+      ? appData.total / count
+      : 0;
+
+    document.getElementById("totalDisplay").textContent =
+      money(appData.total);
+
+    document.getElementById("shareDisplay").textContent =
+      count > 0 ? money(share) : "—";
+
+    document.getElementById("peopleCount").textContent =
+      count + (count === 1 ? " pessoa" : " pessoas");
+
+    list.replaceChildren();
+
+    if (count === 0) {
+      const empty = document.createElement("div");
+
+      empty.className = "empty-state";
+
+      empty.textContent =
+        "Ainda não há ninguém na lista. Use a opção Anotar para adicionar a primeira pessoa.";
+
+      list.appendChild(empty);
+      return;
+    }
+
+    appData.people.forEach((name, index) => {
+      const row = document.createElement("div");
+      row.className = "person-row";
+
+      const nameWrap = document.createElement("div");
+      nameWrap.className = "person-name";
+
+      const number = document.createElement("span");
+      number.className = "person-number";
+      number.textContent = String(index + 1).padStart(2, "0");
+
+      const label = document.createElement("span");
+      label.textContent = name;
+
+      nameWrap.append(number, label);
+
+      const value = document.createElement("span");
+      value.className = "person-value";
+      value.textContent = money(share);
+
+      row.append(nameWrap, value);
+      list.appendChild(row);
     });
+  }
 
-    function renderPeople() {
-      const list = document.getElementById('peopleList');
-      const count = appData.people.length;
-      const share = count > 0 ? appData.total / count : 0;
 
-      document.getElementById('totalDisplay').textContent = money(appData.total);
-      document.getElementById('shareDisplay').textContent = count > 0 ? money(share) : '—';
-      document.getElementById('peopleCount').textContent = `${count} ${count === 1 ? 'pessoa' : 'pessoas'}`;
-      list.replaceChildren();
-
-      if (count === 0) {
-        const empty = document.createElement('div');
-        empty.className = 'empty-state';
-        empty.textContent = 'Ainda não há ninguém na lista. Use a opção “Anotar” para adicionar a primeira pessoa.';
-        list.appendChild(empty);
-        return;
-      }
-
-      appData.people.forEach((name, index) => {
-        const row = document.createElement('div');
-        row.className = 'person-row';
-
-        const nameWrap = document.createElement('div');
-        nameWrap.className = 'person-name';
-        const number = document.createElement('span');
-        number.className = 'person-number';
-        number.textContent = String(index + 1).padStart(2, '0');
-        const label = document.createElement('span');
-        label.textContent = name;
-        nameWrap.append(number, label);
-
-        const value = document.createElement('span');
-        value.className = 'person-value';
-        value.textContent = money(share);
-        row.append(nameWrap, value);
-        list.appendChild(row);
-      });
+  // 10. RESETAR LISTA
+  async function resetPeople() {
+    if (appData.people.length === 0) {
+      alert("A lista já está vazia.");
+      return;
     }
 
-    function resetPeople() {
-      if (appData.people.length === 0) {
-        alert('A lista já está vazia.');
-        return;
-      }
-      const confirmed = confirm('Tem certeza de que deseja apagar todos os nomes? Essa ação não pode ser desfeita.');
-      if (!confirmed) return;
-      appData.people = [];
-      if (saveData()) {
-        renderPeople();
-        alert('A lista de pessoas foi resetada.');
-      }
-    }
+    const confirmed = confirm(
+      "Tem certeza de que deseja apagar todos os nomes?"
+    );
 
-    function exportData() {
-      const backup = {
-        app: 'Badevc',
-        exportedAt: new Date().toISOString(),
-        total: appData.total,
-        people: appData.people
-      };
-      const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'badevc-backup.json';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(url);
-    }
+    if (!confirmed) return;
 
-    // Atualiza os dados exibidos ao abrir o sistema.
-    renderPeople();
-  </script>
+    try {
+      await remove(peopleRef);
+      alert("Lista resetada com sucesso!");
+
+    } catch (error) {
+      console.error(error);
+      alert("Não foi possível resetar a lista.");
+    }
+  }
+
+
+  // 11. BAIXAR BACKUP
+  function exportData() {
+    const backup = {
+      app: "Badevc",
+      exportedAt: new Date().toISOString(),
+      total: appData.total,
+      people: appData.people
+    };
+
+    const blob = new Blob(
+      [JSON.stringify(backup, null, 2)],
+      { type: "application/json" }
+    );
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "badevc-backup.json";
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    URL.revokeObjectURL(url);
+  }
+
+
+  // 12. DISPONIBILIZAR FUNÇÕES PARA OS BOTÕES HTML
+  window.showPage = showPage;
+  window.renderPeople = renderPeople;
+  window.resetPeople = resetPeople;
+  window.exportData = exportData;
+
+  renderPeople();
+
+</script>
 </body>
 </html>
